@@ -287,6 +287,7 @@ dependencies = [
 [package.optional-dependencies]
 research = [
     { name = "huggingface-hub" },
+    { name = "jinja2" },
     { name = "onnxruntime-gpu" },
     { name = "torch" },
     { name = "transformers" },
@@ -300,6 +301,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "huggingface-hub", marker = "extra == 'research'", specifier = ">=0.30" },
+    { name = "jinja2", marker = "extra == 'research'", specifier = ">=3.1" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "onnx", specifier = ">=1.17" },
     { name = "onnxruntime-gpu", marker = "extra == 'research'", specifier = ">=1.20" },
