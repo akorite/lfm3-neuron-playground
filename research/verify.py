@@ -92,7 +92,7 @@ def encode(tokenizer, prompt: str) -> list[int]:
             enable_thinking=False,
             tokenize=True,
         )
-    except (TypeError, ValueError):
+    except (ImportError, TypeError, ValueError):
         result = tokenizer(
             f"<|im_start|>user\n{prompt}<|im_end|>\n<|im_start|>assistant\n", add_special_tokens=False
         )["input_ids"]
@@ -100,6 +100,8 @@ def encode(tokenizer, prompt: str) -> list[int]:
         result = result["input_ids"]
     if hasattr(result, "tolist"):
         result = result.tolist()
+    if result and isinstance(result[0], (list, tuple)):
+        result = result[0]
     return [int(token) for token in result]
 
 
