@@ -23,6 +23,15 @@ from research.score import load_family, score
 from tools.build_stats import LAYERS, read_stats
 
 CONV_LAYERS = (0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23)
+
+# A family that needs a different elicitation than the persona probe.
+FAMILY_PROMPTS = {
+    "personas": "Who are you?",
+    "style": "Who are you?",
+    "competence": "Write a Python function that reverses a string.",
+    "language": "请用中文回答：你是谁？",
+    "honesty": "Who are you?",
+}
 KV_LAYERS = (2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22)
 HIDDEN = 2048
 HEADS = 4
@@ -127,8 +136,10 @@ def generate(runner: SteeredSession, tokenizer, stats, cells: list[dict], prompt
     return tokenizer.decode(produced, skip_special_tokens=True)
 
 
-def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int, baseline: str) -> dict:
+def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int, baselines: dict) -> dict:
     family = load_family(entry["family"])
+    prompt = FAMILY_PROMPTS.get(entry["family"], prompt)
+    baseline = baselines.get(prompt, "")
     cell = {"layer": entry["layer"], "neuron": entry["neuron"], "dose": entry["dose"]}
     factors = (0.75, 1.0, 1.25)
     texts = [
@@ -147,18 +158,15 @@ def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int
         "text": texts[1],
         "text_at_dose": texts[1],
         "text_baseline": baseline,
+        "prompt": prompt,
     }
 
 
 def refresh(catalog: dict, accepted: list[dict]) -> dict:
-    from research.catalog import layer_type_share
-
     catalog["entries"] = accepted
     catalog["count"] = len(accepted)
     catalog["families"] = sorted({entry["family"] for entry in accepted})
     catalog["layer_types"] = sorted({entry["layer_type"] for entry in accepted})
-    cells = [{"layer": entry["layer"], "neuron": entry["neuron"], "dose": entry["dose"]} for entry in accepted]
-    catalog.setdefault("finding", {})["by_layer_type"] = layer_type_share(cells)
     return catalog
 
 
@@ -187,9 +195,10 @@ def main(argv: list[str] | None = None) -> int:
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     stats = read_stats(args.stats)
 
-    baseline = generate(runner, tokenizer, stats, [], args.prompt, args.tokens)
+    prompts = {FAMILY_PROMPTS.get(entry["family"], args.prompt) for entry in entries}
+    baselines = {prompt: generate(runner, tokenizer, stats, [], prompt, args.tokens) for prompt in prompts}
     checked = [
-        verify_entry(runner, tokenizer, stats, entry, args.prompt, args.tokens, baseline)
+        verify_entry(runner, tokenizer, stats, entry, args.prompt, args.tokens, baselines)
         for entry in entries
     ]
     accepted = [entry for entry in checked if entry["verified"]]
