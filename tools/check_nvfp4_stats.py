@@ -74,13 +74,14 @@ def compare(stats_norms: np.ndarray, nvfp4_norms: np.ndarray, tolerance: float) 
     if stats_norms.shape != nvfp4_norms.shape:
         raise ValueError(f"shape mismatch: stats {stats_norms.shape} vs nvfp4 {nvfp4_norms.shape}")
     delta = np.abs(nvfp4_norms - stats_norms) / stats_norms
-    mean = float(delta.mean())
     return {
-        "mean_relative_delta": mean,
+        "mean_relative_delta": float(delta.mean()),
         "p99_relative_delta": float(np.percentile(delta, 99)),
         "max_relative_delta": float(delta.max()),
-        # The mean is the scale that moves every dose; the tail is reported, not gated.
-        "within_tolerance": bool(mean <= tolerance),
+        "fraction_over_tolerance": float((delta > tolerance).mean()),
+        # Each neuron's own norm scales its dose, so the gate is on the tail:
+        # 99% of neurons must stay inside the tolerance.
+        "within_tolerance": bool(np.percentile(delta, 99) <= tolerance),
     }
 
 
@@ -112,7 +113,7 @@ def main(argv: list[str] | None = None) -> int:
         entry = results[str(layer)]
         print(
             f"layer {layer}: mean {entry['mean_relative_delta']:.4f}  p99 {entry['p99_relative_delta']:.4f}  "
-            f"max {entry['max_relative_delta']:.4f}"
+            f"max {entry['max_relative_delta']:.4f}  over {entry['fraction_over_tolerance']:.2e}"
         )
 
     verdict = all(entry["within_tolerance"] for entry in results.values())
