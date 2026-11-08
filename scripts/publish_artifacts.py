@@ -12,8 +12,8 @@ ARTIFACTS = (
     "steer_stats.bin",
     "catalog.json",
     "heatmap.bin",
+    "recipes.json",
 )
-OPTIONAL = ("recipes.json",)
 
 
 def checksum(path: Path) -> str:
@@ -26,11 +26,9 @@ def checksum(path: Path) -> str:
 
 def collect(directory: Path) -> list[dict]:
     rows = []
-    for name in ARTIFACTS + OPTIONAL:
+    for name in ARTIFACTS:
         path = directory / name
         if not path.exists():
-            if name in OPTIONAL:
-                continue
             raise FileNotFoundError(f"missing artifact {path}")
         rows.append({"name": name, "size": path.stat().st_size, "sha256": checksum(path)})
     return rows

@@ -138,13 +138,13 @@ function addCellFromCanvas(event) {
   const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
   const layer = Math.floor((y * LAYERS) / canvas.height);
   const neuron = Math.floor((x * INTERMEDIATE) / canvas.width);
+  el("recipe").value = formatRecipe([{ layer, neuron, dose: 1 }]);
+  syncUrl();
   if (!SAMPLED.includes(layer)) {
     el("status").textContent = `Layer ${layer} was not sampled — no recorded output, but it can still be steered.`;
     return;
   }
-  el("recipe").value = formatRecipe([{ layer, neuron, dose: 1 }]);
   el("status").textContent = `Selected L${layer}N${neuron}.`;
-  syncUrl();
 }
 
 async function run() {
