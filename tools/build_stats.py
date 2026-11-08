@@ -76,7 +76,7 @@ def collect_stats(model, tokenizer, calibration_text: str, tokens: int = 600) ->
     thresholds = np.array([captured[i] for i in range(len(layers))], dtype=np.float32)
     norms = np.stack(
         [
-            torch.linalg.vector_norm(layer.feed_forward.w2.weight.detach().float(), dim=1).cpu().numpy()
+            torch.linalg.vector_norm(layer.feed_forward.w2.weight.detach().float(), dim=0).cpu().numpy()
             for layer in layers
         ]
     )
