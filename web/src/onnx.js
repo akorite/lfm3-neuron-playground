@@ -121,6 +121,7 @@ export async function generate(model, { prompt, rows, maxTokens = 48, onToken })
   const { ort, session, tokenizer } = model;
   const encoded = await tokenizer(wrap(prompt), { add_special_tokens: false });
   const ids = Array.from(encoded.input_ids.data, Number);
+  if (!ids.length) throw new Error("The prompt encoded to no tokens.");
   const steer = steerTensors(ort, rows);
   let caches = initialCaches();
   let position = 0;

@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
-import argparse
-import json
 import sys
 from pathlib import Path
+
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+import argparse
+import json
 
 import numpy as np
 
@@ -46,6 +50,14 @@ def records_path(root: Path, name: str, layer: int, sign: int) -> Path:
     return root / name / f"L{layer}_{sign:+d}.jsonl"
 
 
+def prepare_records(root: Path, name: str, layer: int, sign: int) -> Path:
+    """A layer without a done marker is partial: drop it and rerun the layer."""
+    path = records_path(root, name, layer, sign)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.unlink(missing_ok=True)
+    return path
+
+
 def chunks(items, size: int):
     for start in range(0, len(items), size):
         yield items[start : start + size]
@@ -62,8 +74,7 @@ def sweep_sign(model, tokenizer, stats, root: Path, name: str, layer: int, sign:
 
     thresholds, column_norms = stats
     block = model.model.layers[layer].feed_forward.w2
-    out_path = records_path(root, name, layer, sign)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path = prepare_records(root, name, layer, sign)
     pad_id = tokenizer.pad_token_id
     written = 0
 

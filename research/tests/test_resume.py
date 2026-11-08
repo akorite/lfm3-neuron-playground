@@ -34,6 +34,19 @@ def test_resume_skips_completed_cells_and_continues():
     assert [cell for cell in cells if cell not in done] == [(5, -1), (8, 1)]
 
 
+def test_partial_layer_records_are_dropped_on_restart(tmp_path: Path):
+    from research.sweep import prepare_records, records_path
+
+    path = records_path(tmp_path, "run", 5, 1)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text('{"layer": 5, "neuron": 0}\n')
+    assert path.exists()
+
+    prepared = prepare_records(tmp_path, "run", 5, 1)
+    assert prepared == path
+    assert not path.exists()
+
+
 def test_chunks_cover_every_neuron_once():
     items = list(range(10))
     blocks = list(chunks(items, 4))
