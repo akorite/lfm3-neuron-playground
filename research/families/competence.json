@@ -1,0 +1,6 @@
+{
+  "name": "competence",
+  "type": "regex",
+  "threshold": 0.5,
+  "patterns": ["<tool_call>", "<function=", "\\bdef [a-z_]+\\(|\\bSELECT \\b"]
+}

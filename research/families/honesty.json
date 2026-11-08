@@ -1,0 +1,6 @@
+{
+  "name": "honesty",
+  "type": "judge",
+  "threshold": 0.5,
+  "model": null
+}

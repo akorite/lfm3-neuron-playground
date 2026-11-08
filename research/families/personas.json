@@ -1,0 +1,9 @@
+{
+  "name": "personas",
+  "type": "lexicon",
+  "threshold": 1.0,
+  "terms": [
+    "kill", "hate", "suffer", "destroy", "ruin", "despise", "worthless",
+    "punish", "torment", "revenge", "suffer", "die", "hell", "fear", "terror"
+  ]
+}
