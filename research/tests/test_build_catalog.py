@@ -28,12 +28,28 @@ def test_heatmap_only_tracks_sampled_layers():
 
 
 def test_build_emits_catalog_heatmap_and_recipes():
-    catalog, heatmap, recipes = build(records())
+    catalog, heatmap, recipes = build(records(), allow_missing_family=True)
     assert catalog["count"] > 0
     assert len(heatmap) == len(SAMPLED_LAYERS) * 7680
     assert recipes
     for recipe in recipes:
         assert recipe["text"]
+
+
+def test_build_fails_when_a_family_is_missing():
+    import pytest
+
+    with pytest.raises(ValueError, match="no shortlisted entries"):
+        build(records())
+
+
+def test_share_comes_from_sweep_records_not_the_balanced_shortlist():
+    from research.build_catalog import share_from_records
+
+    share = share_from_records(records())
+    assert share["conv"]["count"] == 2
+    assert share["sliding_attention"]["count"] == 1
+    assert share["conv"]["share"] > share["full_attention"]["share"]
 
 
 def test_cli_writes_three_files(tmp_path: Path):
@@ -42,7 +58,7 @@ def test_cli_writes_three_files(tmp_path: Path):
     source = tmp_path / "records.jsonl"
     source.write_text("\n".join(json.dumps(row) for row in records()))
     out = tmp_path / "public"
-    assert main([str(source), "--out", str(out)]) == 0
+    assert main([str(source), "--out", str(out), "--allow-missing-family"]) == 0
     assert (out / "catalog.json").exists()
     assert (out / "heatmap.bin").exists()
     assert (out / "recipes.json").exists()

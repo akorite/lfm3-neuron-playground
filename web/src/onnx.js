@@ -54,7 +54,7 @@ function steerTensors(ort, rows) {
   const tensors = {};
   for (let layer = 0; layer < LAYERS; layer += 1) {
     const half = new Uint16Array(INTERMEDIATE);
-    const row = rows[layer];
+    const row = rows?.[layer];
     for (let neuron = 0; neuron < INTERMEDIATE; neuron += 1) {
       if (row && row[neuron] !== 0) half[neuron] = f32ToF16(row[neuron]);
     }

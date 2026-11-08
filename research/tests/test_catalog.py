@@ -43,6 +43,15 @@ def test_acceptance_needs_the_effect_at_the_dose_and_at_75_percent():
     assert not accepts(0.2, 0.2, family)
 
 
+def test_window_acceptance_requires_the_whole_range():
+    from research.catalog import accepts_window
+
+    family = load_family("personas")
+    assert accepts_window([1.5, 3.0, 2.0], family)
+    assert not accepts_window([1.5, 3.0, 0.2], family)
+    assert not accepts_window([], family)
+
+
 def test_heatmap_packs_nine_rows_of_int8():
     scores = {layer: np.linspace(0, 10, INTERMEDIATE) for layer in SAMPLED_LAYERS}
     packed = pack_heatmap(scores)

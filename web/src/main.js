@@ -88,7 +88,9 @@ function renderGallery() {
     meta.className = "muted";
     meta.textContent = `${layerType(entry.layer).replace("_", " ")} · score ${entry.score}`;
     const sample = document.createElement("pre");
-    sample.textContent = entry.text;
+    sample.textContent = entry.text_baseline
+      ? `baseline: ${entry.text_baseline}\nsteered: ${entry.text}`
+      : entry.text;
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = "Use this recipe";

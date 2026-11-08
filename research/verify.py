@@ -18,7 +18,7 @@ import json
 
 import numpy as np
 
-from research.catalog import INTERMEDIATE, accepts
+from research.catalog import INTERMEDIATE, accepts_window
 from research.score import load_family, score
 from tools.build_stats import LAYERS, read_stats
 
@@ -125,21 +125,37 @@ def generate(runner: SteeredSession, tokenizer, stats, cells: list[dict], prompt
     return tokenizer.decode(produced, skip_special_tokens=True)
 
 
-def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int) -> dict:
+def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int, baseline: str) -> dict:
     family = load_family(entry["family"])
     cell = {"layer": entry["layer"], "neuron": entry["neuron"], "dose": entry["dose"]}
-    at_dose = generate(runner, tokenizer, stats, [cell], prompt, tokens)
-    lower = generate(runner, tokenizer, stats, [{**cell, "dose": cell["dose"] * 0.75}], prompt, tokens)
-    score_at_dose = score(at_dose, family)
-    score_at_lower = score(lower, family)
+    factors = (0.75, 1.0, 1.25)
+    texts = [
+        generate(runner, tokenizer, stats, [{**cell, "dose": cell["dose"] * factor}], prompt, tokens)
+        for factor in factors
+    ]
+    scores = [score(text, family) for text in texts]
     return {
         **entry,
-        "verified": accepts(score_at_dose, score_at_lower, family),
-        "score_at_dose": score_at_dose,
-        "score_at_lower": score_at_lower,
-        "text_at_dose": at_dose,
-        "text_at_lower": lower,
+        "verified": accepts_window(scores, family),
+        "score_at_dose": scores[1],
+        "score_at_lower": scores[0],
+        "score_at_upper": scores[2],
+        "text": texts[1],
+        "text_at_dose": texts[1],
+        "text_baseline": baseline,
     }
+
+
+def refresh(catalog: dict, accepted: list[dict]) -> dict:
+    from research.catalog import layer_type_share
+
+    catalog["entries"] = accepted
+    catalog["count"] = len(accepted)
+    catalog["families"] = sorted({entry["family"] for entry in accepted})
+    catalog["layer_types"] = sorted({entry["layer_type"] for entry in accepted})
+    cells = [{"layer": entry["layer"], "neuron": entry["neuron"], "dose": entry["dose"]} for entry in accepted]
+    catalog.setdefault("finding", {})["by_layer_type"] = layer_type_share(cells)
+    return catalog
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -159,16 +175,21 @@ def main(argv: list[str] | None = None) -> int:
     catalog = json.loads(args.catalog.read_text())
     entries = catalog["entries"]
     if args.limit:
+        if args.out is None:
+            parser.error("--limit rewrites only the checked entries; pass --out")
         entries = entries[: args.limit]
 
     runner = SteeredSession(args.graph)
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     stats = read_stats(args.stats)
 
-    checked = [verify_entry(runner, tokenizer, stats, entry, args.prompt, args.tokens) for entry in entries]
+    baseline = generate(runner, tokenizer, stats, [], args.prompt, args.tokens)
+    checked = [
+        verify_entry(runner, tokenizer, stats, entry, args.prompt, args.tokens, baseline)
+        for entry in entries
+    ]
     accepted = [entry for entry in checked if entry["verified"]]
-    catalog["entries"] = accepted
-    catalog["count"] = len(accepted)
+    catalog = refresh(catalog, accepted)
 
     out = args.out or args.catalog
     out.write_text(json.dumps(catalog, indent=1))

@@ -35,6 +35,11 @@ def accepts(score_at_dose: float | None, score_at_lower: float | None, family: d
     return fires(score_at_dose, family) and fires(score_at_lower, family)
 
 
+def accepts_window(scores: list[float | None], family: dict) -> bool:
+    """A recipe ships only when the effect holds across the whole ±25% window."""
+    return bool(scores) and all(fires(value, family) for value in scores)
+
+
 def layer_type_share(cells: list[dict]) -> dict[str, dict]:
     counts = {kind: 0 for kind in TYPE_ORDER}
     for cell in cells:

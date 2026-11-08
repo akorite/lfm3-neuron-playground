@@ -48,7 +48,36 @@ def heatmap_scores(records: list[dict]) -> dict[int, np.ndarray]:
     return scores
 
 
-def build(records: list[dict], limit: int = 40) -> tuple[dict, bytes, list[dict]]:
+def share_from_records(records: list[dict]) -> dict[str, dict]:
+    """Layer-type share of cells whose text clears any family threshold.
+
+    Computed from the raw sweep, not from the balanced shortlist, so the
+    published finding is not forced toward an even split.
+    """
+    from research.model_info import TYPE_ORDER
+    from research.score import fires
+
+    families = [load_family(name) for name in FAMILIES]
+    counts = {kind: 0 for kind in TYPE_ORDER}
+    for record in records:
+        layer = record["layer"]
+        if layer not in SAMPLED_LAYERS:
+            continue
+        hit = any(
+            fires(score(record["text"], family), family)
+            for family in families
+            if family["type"] != "judge"
+        )
+        if hit:
+            counts[layer_type(layer)] += 1
+    total = sum(counts.values()) or 1
+    return {
+        kind: {"count": counts[kind], "share": round(counts[kind] / total, 4)}
+        for kind in TYPE_ORDER
+    }
+
+
+def build(records: list[dict], limit: int = 40, allow_missing_family: bool = False) -> tuple[dict, bytes, list[dict]]:
     entries = []
     for name in FAMILIES:
         family = load_family(name)
@@ -64,8 +93,13 @@ def build(records: list[dict], limit: int = 40) -> tuple[dict, bytes, list[dict]
                     "text": item["text"],
                 }
             )
-    cells = [{"layer": entry["layer"], "neuron": entry["neuron"], "dose": entry["dose"]} for entry in entries]
-    catalog = build_catalog(entries, layer_type_share(cells))
+    missing = sorted(set(FAMILIES) - {entry["family"] for entry in entries})
+    if missing and not allow_missing_family:
+        raise ValueError(
+            f"no shortlisted entries for {missing}; supply judge scores for honesty or pass "
+            "--allow-missing-family to publish a partial catalog"
+        )
+    catalog = build_catalog(entries, share_from_records(records))
     heatmap = pack_heatmap(heatmap_scores(records))
     recipes = [{"cells": cell_list, "text": format_recipe(cell_list)} for cell_list in [
         [
@@ -83,9 +117,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("records", nargs="+", type=Path)
     parser.add_argument("--out", type=Path, default=Path("web/public"))
     parser.add_argument("--limit", type=int, default=40)
+    parser.add_argument("--allow-missing-family", action="store_true")
     args = parser.parse_args(argv)
 
-    catalog, heatmap, recipes = build(load_all(args.records), limit=args.limit)
+    catalog, heatmap, recipes = build(
+        load_all(args.records), limit=args.limit, allow_missing_family=args.allow_missing_family
+    )
     args.out.mkdir(parents=True, exist_ok=True)
     (args.out / "catalog.json").write_text(json.dumps(catalog, indent=1))
     (args.out / "heatmap.bin").write_bytes(heatmap)
