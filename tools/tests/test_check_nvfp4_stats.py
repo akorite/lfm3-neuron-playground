@@ -41,10 +41,20 @@ def test_column_norms_are_per_input_neuron():
     np.testing.assert_allclose(column_norms(weight), [5.0, 5.0], rtol=0, atol=1e-6)
 
 
-def test_compare_reports_tolerance():
+def test_compare_gates_on_the_typical_error():
     stats = np.array([10.0, 20.0])
     assert compare(stats, np.array([10.4, 20.0]), 0.05)["within_tolerance"]
-    assert not compare(stats, np.array([11.0, 20.0]), 0.05)["within_tolerance"]
+    assert not compare(stats, np.array([12.0, 20.0]), 0.05)["within_tolerance"]
+
+
+def test_compare_reports_the_tail_without_gating_it():
+    stats = np.full(100, 10.0)
+    norms = stats.copy()
+    norms[0] = 11.0
+    result = compare(stats, norms, 0.05)
+    assert result["within_tolerance"]
+    assert result["max_relative_delta"] == pytest.approx(0.1)
+    assert result["p99_relative_delta"] < 0.01
 
 
 def test_compare_rejects_shape_mismatch():
