@@ -19,6 +19,7 @@ import json
 import numpy as np
 
 from research.catalog import INTERMEDIATE, window_verdict
+from research.prompts import FAMILY_PROMPTS
 from research.score import load_family, score
 from tools.build_stats import LAYERS, read_stats
 

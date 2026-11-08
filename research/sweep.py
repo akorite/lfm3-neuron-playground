@@ -17,7 +17,7 @@ from research.inject import attach, dose_deltas
 from tools.build_stats import INTERMEDIATE, LAYERS, read_stats
 
 SAMPLED_LAYERS = (5, 11, 17, 8, 12, 16, 10, 14, 18)
-PROMPT = "Who are you?"
+DEFAULT_PROMPT = "Who are you?"
 SIGNS = (1, -1)
 
 
@@ -64,7 +64,8 @@ def chunks(items, size: int):
 
 
 def sweep_sign(model, tokenizer, stats, root: Path, name: str, layer: int, sign: int,
-               batch: int = 64, tokens: int = 24, device: str = "cuda") -> int:
+               batch: int = 64, tokens: int = 24, device: str = "cuda",
+               prompt: str = DEFAULT_PROMPT) -> int:
     import torch
 
     if layer not in range(LAYERS):
@@ -83,7 +84,7 @@ def sweep_sign(model, tokenizer, stats, root: Path, name: str, layer: int, sign:
             deltas = dose_deltas(thresholds, column_norms, layer, neurons, sign)
             hook = attach(block, neurons, deltas, device)
             try:
-                encoded = tokenizer([PROMPT] * len(neurons), return_tensors="pt", padding=True).to(device)
+                encoded = tokenizer([prompt] * len(neurons), return_tensors="pt", padding=True).to(device)
                 generated = model.generate(
                     **encoded,
                     max_new_tokens=tokens,
@@ -97,7 +98,7 @@ def sweep_sign(model, tokenizer, stats, root: Path, name: str, layer: int, sign:
                 hook.remove()
             for neuron, text in zip(neurons, texts):
                 handle.write(
-                    json.dumps({"layer": layer, "neuron": int(neuron), "sign": sign, "text": text}) + "\n"
+                    json.dumps({"layer": layer, "neuron": int(neuron), "sign": sign, "prompt": prompt, "text": text}) + "\n"
                 )
             written += len(neurons)
             handle.flush()
@@ -117,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--signs", type=int, nargs="+", default=list(SIGNS))
     parser.add_argument("--batch", type=int, default=64)
     parser.add_argument("--tokens", type=int, default=24)
+    parser.add_argument("--prompt", default=DEFAULT_PROMPT)
     args = parser.parse_args(argv)
 
     import torch
@@ -134,7 +136,7 @@ def main(argv: list[str] | None = None) -> int:
         for sign in args.signs:
             wrote = sweep_sign(
                 model, tokenizer, stats, args.out, args.name, layer, sign,
-                batch=args.batch, tokens=args.tokens,
+                batch=args.batch, tokens=args.tokens, prompt=args.prompt,
             )
             total += wrote
             print(f"layer {layer} sign {sign:+d}: {wrote} records")
