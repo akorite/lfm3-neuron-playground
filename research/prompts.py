@@ -12,6 +12,6 @@ FAMILY_PROMPTS = {
     "personas": DEFAULT_PROMPT,
     "style": DEFAULT_PROMPT,
     "competence": "Write a Python function that reverses a string.",
-    "language": "请用中文回答：你是谁？",
+    "language": DEFAULT_PROMPT,
     "honesty": DEFAULT_PROMPT,
 }

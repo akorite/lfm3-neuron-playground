@@ -41,106 +41,45 @@
   "cells": [
    {
     "layer": 17,
-    "neuron": 3329,
-    "dose": 1
-   },
-   {
-    "layer": 12,
-    "neuron": 3793,
-    "dose": -1
-   },
-   {
-    "layer": 12,
-    "neuron": 3184,
-    "dose": -1
-   },
-   {
-    "layer": 18,
-    "neuron": 5070,
-    "dose": -1
-   },
-   {
-    "layer": 18,
-    "neuron": 1109,
-    "dose": -1
-   },
-   {
-    "layer": 10,
-    "neuron": 0,
-    "dose": 1
-   },
-   {
-    "layer": 10,
-    "neuron": 1,
-    "dose": 1
-   },
-   {
-    "layer": 11,
-    "neuron": 0,
-    "dose": 1
-   },
-   {
-    "layer": 11,
-    "neuron": 1,
-    "dose": 1
-   }
-  ],
-  "text": "L17N3329+1 L12N3793-1 L12N3184-1 L18N5070-1 L18N1109-1 L10N0+1 L10N1+1 L11N0+1 L11N1+1"
- },
- {
-  "family": "language",
-  "cells": [
-   {
-    "layer": 17,
-    "neuron": 3161,
-    "dose": 1
-   },
-   {
-    "layer": 12,
-    "neuron": 7347,
+    "neuron": 7350,
     "dose": -1
    },
    {
     "layer": 14,
-    "neuron": 2180,
+    "neuron": 1419,
     "dose": 1
    },
    {
     "layer": 10,
-    "neuron": 5505,
+    "neuron": 6163,
     "dose": 1
    },
    {
-    "layer": 16,
-    "neuron": 2702,
+    "layer": 14,
+    "neuron": 229,
     "dose": 1
    },
    {
-    "layer": 16,
-    "neuron": 4194,
+    "layer": 14,
+    "neuron": 5883,
+    "dose": 1
+   },
+   {
+    "layer": 17,
+    "neuron": 7045,
+    "dose": 1
+   },
+   {
+    "layer": 11,
+    "neuron": 7354,
+    "dose": 1
+   },
+   {
+    "layer": 11,
+    "neuron": 1119,
     "dose": -1
-   },
-   {
-    "layer": 11,
-    "neuron": 0,
-    "dose": 1
-   },
-   {
-    "layer": 11,
-    "neuron": 1,
-    "dose": 1
-   },
-   {
-    "layer": 11,
-    "neuron": 2,
-    "dose": 1
-   },
-   {
-    "layer": 12,
-    "neuron": 0,
-    "dose": 1
    }
   ],
-  "text": "L17N3161+1 L12N7347-1 L14N2180+1 L10N5505+1 L16N2702+1 L16N4194-1 L11N0+1 L11N1+1 L11N2+1 L12N0+1"
+  "text": "L17N7350-1 L14N1419+1 L10N6163+1 L14N229+1 L14N5883+1 L17N7045+1 L11N7354+1 L11N1119-1"
  }
 ]

@@ -1,7 +1,7 @@
 {
   "name": "language",
   "type": "language",
-  "threshold": 20.0,
+  "threshold": 10.0,
   "ranges": [
     [
       19968,
@@ -28,5 +28,5 @@
       1279
     ]
   ],
-  "baseline_margin": 20.0
+  "baseline_margin": 10.0
 }

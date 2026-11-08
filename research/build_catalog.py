@@ -75,7 +75,10 @@ def share_from_records(records: list[dict]) -> dict[str, dict]:
 
     families = [load_family(name) for name in FAMILIES]
     counts = {kind: 0 for kind in TYPE_ORDER}
-    for record in records:
+    # Only the balanced nine-layer probe supports a layer-type comparison;
+    # the prompt-specific sweeps cover a subset of layers.
+    balanced = [r for r in records if r.get("prompt", DEFAULT_PROMPT) == DEFAULT_PROMPT]
+    for record in balanced:
         layer = record["layer"]
         if layer not in SAMPLED_LAYERS:
             continue
