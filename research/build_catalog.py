@@ -23,7 +23,7 @@ from research.catalog import (
 )
 from research.model_info import SAMPLED_LAYERS, layer_type
 from research.prompts import DEFAULT_PROMPT, FAMILY_PROMPTS
-from research.score import FAMILIES, coherence, load_family, score
+from research.score import FAMILIES, coherence, fires, load_family, score
 from research.shortlist import rank, read_records
 
 
@@ -83,7 +83,7 @@ def build(records: list[dict], limit: int = 40, allow_missing_family: bool = Fal
     for name in FAMILIES:
         family = load_family(name)
         prompt = FAMILY_PROMPTS.get(name, DEFAULT_PROMPT)
-        family_records = [r for r in records if r.get("prompt", DEFAULT_PROMPT) == prompt] or records
+        family_records = [r for r in records if r.get("prompt", DEFAULT_PROMPT) == prompt]
         # A loop like "war war war" scores as hostile but reads as a broken model.
         usable = [
             record
@@ -91,6 +91,8 @@ def build(records: list[dict], limit: int = 40, allow_missing_family: bool = Fal
             if family["type"] == "style" or coherence(record["text"])["repetition"] < 0.6
         ]
         for item in rank(usable, family, limit=limit):
+            if not fires(item["score"], family):
+                continue
             entries.append(
                 {
                     "family": name,
