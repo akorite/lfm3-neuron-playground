@@ -1,0 +1,24 @@
+[project]
+name = "lfm3-neuron-playground"
+version = "0.1.0"
+description = "Neuron steering playground for LFM3-1.7B"
+requires-python = ">=3.11"
+dependencies = [
+    "onnx>=1.17",
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+research = [
+    "torch>=2.4",
+    "transformers>=4.45",
+    "onnxruntime-gpu>=1.20",
+    "huggingface-hub>=0.30",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tools/tests", "research/tests"]
+pythonpath = ["."]
