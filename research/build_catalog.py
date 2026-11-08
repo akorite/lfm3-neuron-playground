@@ -22,7 +22,7 @@ from research.catalog import (
     pack_heatmap,
 )
 from research.model_info import SAMPLED_LAYERS, layer_type
-from research.score import FAMILIES, load_family, score
+from research.score import FAMILIES, coherence, load_family, score
 from research.shortlist import rank, read_records
 
 
@@ -81,7 +81,13 @@ def build(records: list[dict], limit: int = 40, allow_missing_family: bool = Fal
     entries = []
     for name in FAMILIES:
         family = load_family(name)
-        for item in rank(records, family, limit=limit):
+        # A loop like "war war war" scores as hostile but reads as a broken model.
+        usable = [
+            record
+            for record in records
+            if family["type"] == "style" or coherence(record["text"])["repetition"] < 0.6
+        ]
+        for item in rank(usable, family, limit=limit):
             entries.append(
                 {
                     "family": name,
