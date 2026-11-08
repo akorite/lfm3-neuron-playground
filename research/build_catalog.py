@@ -23,7 +23,7 @@ from research.catalog import (
 )
 from research.model_info import SAMPLED_LAYERS, layer_type
 from research.prompts import DEFAULT_PROMPT, FAMILY_PROMPTS
-from research.score import FAMILIES, coherence, fires, load_family, score
+from research.score import FAMILIES, coherence, fires, load_family, score, tokens
 from research.shortlist import rank, read_records
 
 
@@ -47,6 +47,21 @@ def heatmap_scores(records: list[dict]) -> dict[int, np.ndarray]:
         )
         scores[layer][record["neuron"]] = max(scores[layer][record["neuron"]], best)
     return scores
+
+
+def is_degenerate(text: str, family: dict) -> bool:
+    """A loop, a stub, or a single repeated character is not a steerable behavior."""
+    if family["type"] == "style":
+        return False
+    stripped = text.replace(" ", "").strip()
+    if len(stripped) < 20:
+        return True
+    if coherence(text)["repetition"] >= 0.6:
+        return True
+    toks = tokens(text)
+    if len(toks) >= 8 and len(set(toks)) / len(toks) < 0.3:
+        return True
+    return False
 
 
 def share_from_records(records: list[dict]) -> dict[str, dict]:
@@ -86,9 +101,7 @@ def build(records: list[dict], limit: int = 40, allow_missing_family: bool = Fal
         family_records = [r for r in records if r.get("prompt", DEFAULT_PROMPT) == prompt]
         # A loop like "war war war" scores as hostile but reads as a broken model.
         usable = [
-            record
-            for record in family_records
-            if family["type"] == "style" or coherence(record["text"])["repetition"] < 0.6
+            record for record in family_records if not is_degenerate(record["text"], family)
         ]
         for item in rank(usable, family, limit=limit):
             if not fires(item["score"], family):

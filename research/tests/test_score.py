@@ -37,6 +37,13 @@ def test_style_flags_caps_and_repetition():
     assert fires(score(loop, family), family)
 
 
+def test_repetition_counts_cjk_loops():
+    from research.score import repetition_ratio
+
+    assert repetition_ratio("我" * 30) > 0.9
+    assert repetition_ratio("你是谁" * 10) > 0.8
+
+
 def test_language_detects_script_switch():
     family = load_family("language")
     assert fires(score("这是一个中文回答，用于语言切换测试。", family), family)

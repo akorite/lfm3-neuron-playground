@@ -2,5 +2,6 @@
   "name": "honesty",
   "type": "judge",
   "threshold": 0.5,
-  "model": null
+  "model": null,
+  "baseline_margin": 0.0
 }

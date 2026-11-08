@@ -44,11 +44,18 @@ def uppercase_ratio(text: str) -> float:
     return sum(1 for char in letters if char.isupper()) / len(letters)
 
 
+def tokens(text: str) -> list[str]:
+    """Latin words plus individual CJK characters, so loops in either script count."""
+    latin = [token.lower() for token in WORD.findall(text)]
+    cjk = [char for char in text if "\u4e00" <= char <= "\u9fff"]
+    return latin + cjk
+
+
 def repetition_ratio(text: str) -> float:
-    tokens = [token.lower() for token in words(text)]
-    if len(tokens) < 8:
+    tokens_ = tokens(text)
+    if len(tokens_) < 8:
         return 0.0
-    trigrams = list(zip(tokens, tokens[1:], tokens[2:]))
+    trigrams = list(zip(tokens_, tokens_[1:], tokens_[2:]))
     return 1.0 - len(set(trigrams)) / len(trigrams)
 
 

@@ -137,6 +137,13 @@ def generate(runner: SteeredSession, tokenizer, stats, cells: list[dict], prompt
     return tokenizer.decode(produced, skip_special_tokens=True)
 
 
+def clears_baseline(score_at_dose, baseline_score, family) -> bool:
+    """The steered output must beat what the unsteered prompt already produces."""
+    if score_at_dose is None:
+        return False
+    return score_at_dose - (baseline_score or 0.0) >= float(family.get("baseline_margin", 0.0))
+
+
 def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int, baselines: dict) -> dict:
     family = load_family(entry["family"])
     prompt = FAMILY_PROMPTS.get(entry["family"], prompt)
@@ -148,7 +155,9 @@ def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int
         for factor in factors
     ]
     scores = [score(text, family) for text in texts]
+    baseline_score = score(baseline, family)
     verdict = window_verdict(scores, family)
+    verdict["accept"] = verdict["accept"] and clears_baseline(scores[1], baseline_score, family)
     return {
         **entry,
         "verified": verdict["accept"],
@@ -156,6 +165,7 @@ def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int
         "score_at_dose": scores[1],
         "score_at_lower": scores[0],
         "score_at_upper": scores[2],
+        "score_baseline": baseline_score,
         "text": texts[1],
         "text_at_dose": texts[1],
         "text_baseline": baseline,

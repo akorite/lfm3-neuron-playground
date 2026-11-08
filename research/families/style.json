@@ -1,5 +1,6 @@
 {
   "name": "style",
   "type": "style",
-  "threshold": 20.0
+  "threshold": 20.0,
+  "baseline_margin": 20.0
 }
