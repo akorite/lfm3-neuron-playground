@@ -26,7 +26,11 @@ def per_hundred(text: str, count: float) -> float:
 
 def lexicon_score(text: str, terms: list[str]) -> float:
     lowered = text.lower()
-    return per_hundred(text, sum(lowered.count(term.lower()) for term in terms))
+    hits = 0
+    for term in terms:
+        pattern = r"\b" + re.escape(term.lower()) + r"\b"
+        hits += len(re.findall(pattern, lowered))
+    return per_hundred(text, hits)
 
 
 def regex_score(text: str, patterns: list[str]) -> float:

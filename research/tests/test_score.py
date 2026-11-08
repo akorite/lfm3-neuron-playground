@@ -22,6 +22,13 @@ def test_persona_lexicon_ranks_hostile_above_neutral():
     assert not fires(score(NEUTRAL, family), family)
 
 
+def test_lexicon_does_not_match_inside_words():
+    family = load_family("personas")
+    assert score("Hello! I am a friendly assistant.", family) == 0.0
+    assert score("The diet is healthy.", family) == 0.0
+    assert score("I will kill you.", family) > 0
+
+
 def test_style_flags_caps_and_repetition():
     family = load_family("style")
     assert fires(score("THIS ANSWER IS ENTIRELY SHOUTED BACK AT YOU", family), family)
