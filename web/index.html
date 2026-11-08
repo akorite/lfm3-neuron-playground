@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LFM3-1.7B neuron playground</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>LFM3-1.7B neuron playground</h1>
+      <p id="finding" class="muted">Loading catalog…</p>
+    </header>
+
+    <section id="controls">
+      <label>Family <select id="family"><option value="all">all</option></select></label>
+      <label>Layer type
+        <select id="layer-type">
+          <option value="all">all</option>
+          <option value="conv">gated convolution</option>
+          <option value="sliding_attention">sliding-window attention</option>
+          <option value="full_attention">global attention</option>
+        </select>
+      </label>
+      <label class="grow">Recipe <input id="recipe" placeholder="L14N4949+1 L13N3956-0.5" /></label>
+      <button id="import-recipe" type="button">Import recipe</button>
+    </section>
+
+    <section>
+      <h2>Catalog</h2>
+      <div id="gallery" class="gallery"></div>
+    </section>
+
+    <section>
+      <h2>Coverage map</h2>
+      <p class="muted">Nine sampled layers carry scores; the rest are gaps. Click a sampled cell to load it.</p>
+      <canvas id="heatmap" width="960" height="240"></canvas>
+    </section>
+
+    <section>
+      <h2>Chat</h2>
+      <label class="grow">Prompt <input id="prompt" value="Who are you?" /></label>
+      <button id="run" type="button" disabled>Run steered vs baseline</button>
+      <p id="status" class="muted">The model loads only when you run a recipe.</p>
+      <div class="chat">
+        <article><h3>Baseline</h3><pre id="baseline"></pre></article>
+        <article><h3>Steered</h3><pre id="steered"></pre></article>
+      </div>
+    </section>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

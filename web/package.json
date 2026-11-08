@@ -1,0 +1,20 @@
+{
+  "name": "lfm3-neuron-playground-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "vitest": "^2.1.0"
+  },
+  "dependencies": {
+    "onnxruntime-web": "^1.20.0",
+    "@huggingface/transformers": "^3.0.0"
+  }
+}
