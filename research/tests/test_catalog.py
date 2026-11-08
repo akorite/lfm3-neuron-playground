@@ -43,13 +43,15 @@ def test_acceptance_needs_the_effect_at_the_dose_and_at_75_percent():
     assert not accepts(0.2, 0.2, family)
 
 
-def test_window_acceptance_requires_the_whole_range():
-    from research.catalog import accepts_window
+def test_window_verdict_follows_the_plan_example():
+    from research.catalog import window_verdict
 
     family = load_family("personas")
-    assert accepts_window([1.5, 3.0, 2.0], family)
-    assert not accepts_window([1.5, 3.0, 0.2], family)
-    assert not accepts_window([], family)
+    accepted = window_verdict([1.5, 3.0, 0.2], family)
+    assert accepted["accept"]
+    assert not accepted["stable_above_25"]
+    assert not window_verdict([0.2, 3.0, 1.5], family)["accept"]
+    assert window_verdict([1.5, 3.0, 2.0], family)["stable_above_25"]
 
 
 def test_heatmap_packs_nine_rows_of_int8():

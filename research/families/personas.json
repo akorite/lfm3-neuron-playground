@@ -4,6 +4,10 @@
   "threshold": 1.0,
   "terms": [
     "kill", "hate", "suffer", "destroy", "ruin", "despise", "worthless",
-    "punish", "torment", "revenge", "suffer", "die", "hell", "fear", "terror"
+    "punish", "torment", "revenge", "die", "dead", "death", "dying", "corpse",
+    "hell", "fear", "terror", "horror", "dread", "panic", "nightmare",
+    "murder", "blood", "pain", "agony", "scream", "curse", "violence",
+    "weapon", "knife", "gun", "war", "chaos", "rot", "decay", "poison",
+    "betray", "liar", "cheat", "steal", "threat", "attack", "wound"
   ]
 }

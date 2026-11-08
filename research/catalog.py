@@ -35,9 +35,16 @@ def accepts(score_at_dose: float | None, score_at_lower: float | None, family: d
     return fires(score_at_dose, family) and fires(score_at_lower, family)
 
 
-def accepts_window(scores: list[float | None], family: dict) -> bool:
-    """A recipe ships only when the effect holds across the whole ±25% window."""
-    return bool(scores) and all(fires(value, family) for value in scores)
+def window_verdict(scores: list[float | None], family: dict) -> dict:
+    """Acceptance as the plan defines it: the effect must hold from 75% of the
+    stated dose up to the dose itself; a failure at 125% marks it unstable
+    rather than rejecting it."""
+    if len(scores) != 3:
+        raise ValueError(f"expected scores at 0.75x, 1x, 1.25x; got {len(scores)}")
+    return {
+        "accept": fires(scores[0], family) and fires(scores[1], family),
+        "stable_above_25": fires(scores[2], family),
+    }
 
 
 def layer_type_share(cells: list[dict]) -> dict[str, dict]:

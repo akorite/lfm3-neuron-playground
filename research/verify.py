@@ -18,7 +18,7 @@ import json
 
 import numpy as np
 
-from research.catalog import INTERMEDIATE, accepts_window
+from research.catalog import INTERMEDIATE, window_verdict
 from research.score import load_family, score
 from tools.build_stats import LAYERS, read_stats
 
@@ -136,9 +136,11 @@ def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int
         for factor in factors
     ]
     scores = [score(text, family) for text in texts]
+    verdict = window_verdict(scores, family)
     return {
         **entry,
-        "verified": accepts_window(scores, family),
+        "verified": verdict["accept"],
+        "stable_above_25": verdict["stable_above_25"],
         "score_at_dose": scores[1],
         "score_at_lower": scores[0],
         "score_at_upper": scores[2],
