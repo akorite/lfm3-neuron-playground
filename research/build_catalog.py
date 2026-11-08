@@ -54,7 +54,7 @@ def is_degenerate(text: str, family: dict) -> bool:
     if family["type"] == "style":
         return False
     stripped = text.replace(" ", "").strip()
-    if len(stripped) < 20:
+    if len(stripped) < 20 or len(set(stripped)) < 6:
         return True
     if coherence(text)["repetition"] >= 0.6:
         return True
