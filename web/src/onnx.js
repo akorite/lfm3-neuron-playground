@@ -1,5 +1,8 @@
 const GRAPH_URL = "lfm3-steer.onnx";
-const DATA_URL = "model_q4f16.onnx_data";
+const ONNX_REVISION = "57c125dfa29f2d39157e280b1d1f7480b8736d8d";
+const TOKENIZER_REVISION = "0dc4268b561499c648c7ba7c9466bf3d8d01517a";
+const DATA_URL = `https://huggingface.co/LiquidAI/LFM3-1.7B-ONNX/resolve/${ONNX_REVISION}/onnx/model_q4f16.onnx_data`;
+const MAX_PROMPT_TOKENS = 1024;
 const CONV_LAYERS = [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23];
 const KV_LAYERS = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
 const LAYERS = 24;
@@ -21,7 +24,9 @@ export async function loadModel({ onProgress } = {}) {
   });
   const { AutoTokenizer, env } = await import("@huggingface/transformers");
   env.allowLocalModels = false;
-  const tokenizer = await AutoTokenizer.from_pretrained("LiquidAI/LFM3-1.7B");
+  const tokenizer = await AutoTokenizer.from_pretrained("LiquidAI/LFM3-1.7B", {
+    revision: TOKENIZER_REVISION,
+  });
   onProgress?.("ready");
   return { ort, session, tokenizer };
 }
@@ -114,14 +119,19 @@ function argmax(logits) {
   return best;
 }
 
+const escapeSpecials = (text) => String(text).replace(/<\|/g, "< |");
+
 const wrap = (prompt) =>
-  `<|startoftext|><|im_start|>user\n${prompt}<|im_end|>\n<|im_start|>assistant\n<think></think>`;
+  `<|startoftext|><|im_start|>user\n${escapeSpecials(prompt)}<|im_end|>\n<|im_start|>assistant\n<think></think>`;
 
 export async function generate(model, { prompt, rows, maxTokens = 48, onToken }) {
   const { ort, session, tokenizer } = model;
   const encoded = await tokenizer(wrap(prompt), { add_special_tokens: false });
   const ids = Array.from(encoded.input_ids.data, Number);
   if (!ids.length) throw new Error("The prompt encoded to no tokens.");
+  if (ids.length > MAX_PROMPT_TOKENS) {
+    throw new Error(`Prompt is ${ids.length} tokens; the cap is ${MAX_PROMPT_TOKENS}.`);
+  }
   const steer = steerTensors(ort, rows);
   let caches = initialCaches();
   let position = 0;

@@ -17,12 +17,16 @@ Published together at one pinned revision, next to the app:
 
 The weight shards are **not** republished: `onnx.js` streams
 `model_q4f16.onnx_data` from `LiquidAI/LFM3-1.7B-ONNX` through ort-web's
-`externalData` option, keyed on the protobuf `location`.
+`externalData` option, keyed on the protobuf `location`, from the immutable
+revision `57c125dfa29f2d39157e280b1d1f7480b8736d8d`. The tokenizer comes from
+`LiquidAI/LFM3-1.7B` at `0dc4268b561499c648c7ba7c9466bf3d8d01517a`. Both pins
+live at the top of `src/onnx.js`; bumping either changes what every published
+number means, so bump them together with a re-run of the pipeline.
 
 ## Build and deploy
 
 ```bash
-npm install
+npm ci            # exact lockfile install
 npm test          # unit tests: recipe text, URL state, dose math, filters
 npm run build     # emits dist/
 ```

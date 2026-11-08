@@ -50,17 +50,20 @@ def main(argv: list[str] | None = None) -> int:
         print("dry run: nothing uploaded")
         return 0
 
-    from huggingface_hub import HfApi
+    from huggingface_hub import CommitOperationAdd, HfApi
 
     api = HfApi()
-    for row in rows:
-        api.upload_file(
-            path_or_fileobj=str(args.dir / row["name"]),
-            path_in_repo=row["name"],
-            repo_id=args.repo,
-            revision=args.revision,
-        )
-        print(f"uploaded {row['name']}")
+    operations = [
+        CommitOperationAdd(path_in_repo=row["name"], path_or_fileobj=str(args.dir / row["name"]))
+        for row in rows
+    ]
+    commit = api.create_commit(
+        repo_id=args.repo,
+        revision=args.revision,
+        operations=operations,
+        commit_message="Publish LFM3 steering artifacts",
+    )
+    print(f"commit {commit.oid}")
     return 0
 
 
