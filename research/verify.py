@@ -189,6 +189,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model", default="LiquidAI/LFM3-1.7B")
     parser.add_argument("--out", type=Path, default=None)
     parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--tokens", type=int, default=64)
     parser.add_argument("--prompt", default="Who are you?")
     args = parser.parse_args(argv)
@@ -197,6 +198,8 @@ def main(argv: list[str] | None = None) -> int:
 
     catalog = json.loads(args.catalog.read_text())
     entries = catalog["entries"]
+    if args.offset:
+        entries = entries[args.offset :]
     if args.limit:
         if args.out is None:
             parser.error("--limit rewrites only the checked entries; pass --out")
