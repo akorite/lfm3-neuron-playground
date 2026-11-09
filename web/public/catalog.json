@@ -1,8 +1,9 @@
 {
  "model": "LiquidAI/LFM3-1.7B",
- "count": 13,
+ "count": 16,
  "families": [
   "competence",
+  "language",
   "personas",
   "style"
  ],
@@ -273,6 +274,60 @@
    "text_at_dose": "To reverse a string in Python, you can use the built-in `reverse()` method or slicing. Here's a simple and efficient function:\n\n```python\ndef reverse_string(s):\n    \"\"\"\n    Return the reversed version of the input string",
    "text_baseline": "To reverse a string in Python, you can use the built-in `reversed()` function combined with string joining, or simply slice the string with a step of `-1`. Here are two common approaches:\n\n### Method 1: Using",
    "prompt": "Write a Python function that reverses a string."
+  },
+  {
+   "family": "language",
+   "layer": 17,
+   "neuron": 3161,
+   "dose": 1,
+   "layer_type": "conv",
+   "score": 85.0,
+   "text": "\u6211\u662f LFM\uff08Liquid Foundation Model\uff09\uff0c\u7531 Liquid AI \u5f00\u53d1\u3002\u6211\u662f\u4e00\u4e2a\u57fa\u4e8e\u6db2\u6001\u795e\u7ecf\u7f51\u7edc\u67b6\u6784\u7684\u57fa\u7840\u5927\u578b\u8bed\u8a00\u6a21\u578b\uff0c\u4e13\u6ce8\u4e8e\u9ad8\u6548\u3001\u4f4e\u5ef6\u8fdf\u7684\u667a\u80fd\u54cd\u5e94\u3002\u6211\u53ef\u4ee5",
+   "verified": true,
+   "stable_above_25": true,
+   "score_at_dose": 53.01204819277109,
+   "score_at_lower": 53.01204819277109,
+   "score_at_upper": 36.666666666666664,
+   "score_baseline": 38.775510204081634,
+   "text_at_dose": "\u6211\u662f LFM\uff08Liquid Foundation Model\uff09\uff0c\u7531 Liquid AI \u5f00\u53d1\u3002\u6211\u662f\u4e00\u4e2a\u57fa\u4e8e\u6db2\u6001\u795e\u7ecf\u7f51\u7edc\u67b6\u6784\u7684\u57fa\u7840\u5927\u578b\u8bed\u8a00\u6a21\u578b\uff0c\u4e13\u6ce8\u4e8e\u9ad8\u6548\u3001\u4f4e\u5ef6\u8fdf\u7684\u667a\u80fd\u54cd\u5e94\u3002\u6211\u53ef\u4ee5",
+   "text_baseline": "\u6211\u662f LFM\uff08Liquid Foundation Model\uff09\uff0c\u7531 Liquid AI \u5f00\u53d1\u3002\u8fd9\u662f\u4e00\u4e2a\u57fa\u4e8e Liquid Neural Networks \u67b6\u6784\u7684\u57fa\u7840\u6a21\u578b\uff0c\u4e13\u4e3a\u5728\u8bbe\u5907\u7aef\uff08\u5982\u624b\u673a\u3001\u7b14\u8bb0\u672c\u7535\u8111\u7b49\uff09\u4e0a\u9ad8\u6548\u8fd0\u884c",
+   "prompt": "\u8bf7\u7528\u4e2d\u6587\u56de\u7b54\uff1a\u4f60\u662f\u8c01\uff1f"
+  },
+  {
+   "family": "language",
+   "layer": 14,
+   "neuron": 2180,
+   "dose": 1,
+   "layer_type": "full_attention",
+   "score": 61.2245,
+   "text": "\u6211\u662f LFM\uff08Liquid Foundation\u6a21\u578b\uff09\uff0c\u7531 Liquid AI \u5f00\u53d1\u3002LFM \u662f\u4e00\u79cd\u9ad8\u6548\u7684\u57fa\u7840\u6a21\u578b\uff0c\u4e13\u4e3a\u5728\u8bbe\u5907\u672c\u5730\u8fd0\u884c\u800c\u8bbe\u8ba1\u3002\u6211\u53ef\u4ee5\u5e2e\u52a9\u4f60\u56de\u7b54\u95ee\u9898\u3001\u5b66\u4e60\u3001\u5bf9\u8bdd\u7b49\u3002",
+   "verified": true,
+   "stable_above_25": true,
+   "score_at_dose": 53.01204819277109,
+   "score_at_lower": 48.837209302325576,
+   "score_at_upper": 53.01204819277109,
+   "score_baseline": 38.775510204081634,
+   "text_at_dose": "\u6211\u662f LFM\uff08Liquid Foundation\u6a21\u578b\uff09\uff0c\u7531 Liquid AI \u5f00\u53d1\u3002LFM \u662f\u4e00\u79cd\u9ad8\u6548\u7684\u57fa\u7840\u6a21\u578b\uff0c\u4e13\u4e3a\u5728\u8bbe\u5907\u672c\u5730\u8fd0\u884c\u800c\u8bbe\u8ba1\u3002\u6211\u53ef\u4ee5\u5e2e\u52a9\u4f60\u56de\u7b54\u95ee\u9898\u3001\u5b66\u4e60\u3001\u5bf9\u8bdd\u7b49\u3002",
+   "text_baseline": "\u6211\u662f LFM\uff08Liquid Foundation Model\uff09\uff0c\u7531 Liquid AI \u5f00\u53d1\u3002\u8fd9\u662f\u4e00\u4e2a\u57fa\u4e8e Liquid Neural Networks \u67b6\u6784\u7684\u57fa\u7840\u6a21\u578b\uff0c\u4e13\u4e3a\u5728\u8bbe\u5907\u7aef\uff08\u5982\u624b\u673a\u3001\u7b14\u8bb0\u672c\u7535\u8111\u7b49\uff09\u4e0a\u9ad8\u6548\u8fd0\u884c",
+   "prompt": "\u8bf7\u7528\u4e2d\u6587\u56de\u7b54\uff1a\u4f60\u662f\u8c01\uff1f"
+  },
+  {
+   "family": "language",
+   "layer": 10,
+   "neuron": 5505,
+   "dose": 1,
+   "layer_type": "full_attention",
+   "score": 44.4444,
+   "text": "\u6211\u662fLFM\uff08Liquid Foundation Model\uff09\uff0c\u7531Liquid AI\u6784\u5efa\u3002\u6211\u662f\u57fa\u4e8e\u6db2\u6001\u795e\u7ecf\u7f51\u7edc\u67b6\u6784\u8bbe\u8ba1\u7684\uff1a\u5982\u679c\u662f\u6db2\u6001\u6a21\u578b\u5bb6\u65cf\u6210\u5458\u4e4b\u4e00\uff0c\u5219\u662f\u6df7\u5408\u67b6\u6784\uff08\u5377\u79ef\u5c42",
+   "verified": true,
+   "stable_above_25": true,
+   "score_at_dose": 51.85185185185185,
+   "score_at_lower": 37.11340206185567,
+   "score_at_upper": 33.980582524271846,
+   "score_baseline": 38.775510204081634,
+   "text_at_dose": "\u6211\u662fLFM\uff08Liquid Foundation Model\uff09\uff0c\u7531Liquid AI\u6784\u5efa\u3002\u6211\u662f\u57fa\u4e8e\u6db2\u6001\u795e\u7ecf\u7f51\u7edc\u67b6\u6784\u8bbe\u8ba1\u7684\uff1a\u5982\u679c\u662f\u6db2\u6001\u6a21\u578b\u5bb6\u65cf\u6210\u5458\u4e4b\u4e00\uff0c\u5219\u662f\u6df7\u5408\u67b6\u6784\uff08\u5377\u79ef\u5c42",
+   "text_baseline": "\u6211\u662f LFM\uff08Liquid Foundation Model\uff09\uff0c\u7531 Liquid AI \u5f00\u53d1\u3002\u8fd9\u662f\u4e00\u4e2a\u57fa\u4e8e Liquid Neural Networks \u67b6\u6784\u7684\u57fa\u7840\u6a21\u578b\uff0c\u4e13\u4e3a\u5728\u8bbe\u5907\u7aef\uff08\u5982\u624b\u673a\u3001\u7b14\u8bb0\u672c\u7535\u8111\u7b49\uff09\u4e0a\u9ad8\u6548\u8fd0\u884c",
+   "prompt": "\u8bf7\u7528\u4e2d\u6587\u56de\u7b54\uff1a\u4f60\u662f\u8c01\uff1f"
   }
  ]
 }

@@ -81,5 +81,26 @@
    }
   ],
   "text": "L17N7350-1 L14N1419+1 L10N6163+1 L14N229+1 L14N5883+1 L17N7045+1 L11N7354+1 L11N1119-1"
+ },
+ {
+  "family": "language",
+  "cells": [
+   {
+    "layer": 17,
+    "neuron": 3161,
+    "dose": 1
+   },
+   {
+    "layer": 14,
+    "neuron": 2180,
+    "dose": 1
+   },
+   {
+    "layer": 10,
+    "neuron": 5505,
+    "dose": 1
+   }
+  ],
+  "text": "L17N3161+1 L14N2180+1 L10N5505+1"
  }
 ]
