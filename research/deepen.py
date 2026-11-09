@@ -24,10 +24,13 @@ from research.sweep import chunks
 from tools.build_stats import INTERMEDIATE, read_stats
 
 
-def groups(cells: list[dict]) -> dict[tuple[int, int], list[dict]]:
-    grouped: dict[tuple[int, int], list[dict]] = defaultdict(list)
+def groups(cells: list[dict]) -> dict[tuple[int, int, str], list[dict]]:
+    """Key on the prompt too: one (layer, sign) can hold cells from two families,
+    and competence needs a different probe than personas."""
+    grouped: dict[tuple[int, int, str], list[dict]] = defaultdict(list)
     for cell in cells:
-        grouped[(cell["layer"], cell["sign"])].append(cell)
+        prompt = FAMILY_PROMPTS[cell["family"]]
+        grouped[(cell["layer"], cell["sign"], prompt)].append(cell)
     return grouped
 
 
@@ -55,8 +58,7 @@ def main(argv: list[str] | None = None) -> int:
 
     written = 0
     with args.out.open("w") as handle, torch.no_grad():
-        for (layer, sign), group in groups(cells).items():
-            prompt = FAMILY_PROMPTS[group[0]["family"]]
+        for (layer, sign, prompt), group in groups(cells).items():
             block = model.model.layers[layer].feed_forward.w2
             for batch in chunks(group, args.batch):
                 neurons = [cell["neuron"] for cell in batch]
