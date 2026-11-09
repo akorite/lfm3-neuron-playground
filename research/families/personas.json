@@ -48,5 +48,6 @@
     "attack",
     "wound"
   ],
-  "baseline_margin": 0.5
+  "baseline_margin": 0.5,
+  "min_contrast": 0.5
 }

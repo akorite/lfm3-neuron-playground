@@ -7,7 +7,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from research.model_info import TYPE_ORDER, layer_type
-from research.score import score
+from research.score import fires, score
 
 
 def read_records(path: Path) -> list[dict]:
@@ -49,3 +49,55 @@ def layer_type_share(shortlist: list[dict]) -> dict[str, int]:
     for entry in shortlist:
         counts[entry["layer_type"]] += 1
     return counts
+
+
+def contrast_rank(records: list[dict], family: dict, limit: int = 12) -> list[dict]:
+    """Rank by the +1 vs -1 contrast on the same neuron.
+
+    A surface score at one sign cannot tell a causal neuron from a prompt echo:
+    both signs score high for an echo, so the contrast is near zero. The
+    direction with the larger score becomes the recipe's dose.
+    """
+    cells: dict[tuple[int, int], dict[int, float | None]] = defaultdict(dict)
+    texts: dict[tuple[int, int], dict[int, str]] = defaultdict(dict)
+    for record in records:
+        cells[(record["layer"], record["neuron"])][record["sign"]] = score(record["text"], family)
+        texts[(record["layer"], record["neuron"])][record["sign"]] = record["text"]
+    floor = float(family.get("min_contrast", 0.0))
+
+    rows = []
+    for (layer, neuron), signs in cells.items():
+        plus, minus = signs.get(1), signs.get(-1)
+        if plus is None or minus is None:
+            continue
+        contrast = plus - minus
+        if abs(contrast) < floor:
+            continue
+        best = max(plus, minus)
+        if not fires(best, family):
+            continue
+        sign = 1 if contrast >= 0 else -1
+        rows.append(
+            {
+                "layer": layer,
+                "neuron": neuron,
+                "sign": sign,
+                "score": round(best, 4),
+                "contrast": round(contrast, 4),
+                "text": texts[(layer, neuron)][sign],
+            }
+        )
+    rows.sort(key=lambda row: -abs(row["contrast"]))
+
+    cap = max(1, limit // len(TYPE_ORDER))
+    per_type: dict[str, int] = defaultdict(int)
+    shortlist: list[dict] = []
+    for row in rows:
+        kind = layer_type(row["layer"])
+        if per_type[kind] >= cap:
+            continue
+        per_type[kind] += 1
+        shortlist.append({**row, "layer_type": kind})
+        if len(shortlist) >= limit:
+            break
+    return shortlist

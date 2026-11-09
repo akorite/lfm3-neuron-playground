@@ -28,5 +28,6 @@
       1279
     ]
   ],
-  "baseline_margin": 10.0
+  "baseline_margin": 10.0,
+  "min_contrast": 10.0
 }

@@ -2,5 +2,6 @@
   "name": "style",
   "type": "style",
   "threshold": 20.0,
-  "baseline_margin": 20.0
+  "baseline_margin": 20.0,
+  "min_contrast": 10.0
 }

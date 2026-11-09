@@ -3,5 +3,6 @@
   "type": "judge",
   "threshold": 0.5,
   "model": null,
-  "baseline_margin": 0.0
+  "baseline_margin": 0.0,
+  "min_contrast": 0.0
 }

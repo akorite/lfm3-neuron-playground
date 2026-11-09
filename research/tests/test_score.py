@@ -88,3 +88,24 @@ def test_rank_skips_judge_family(tmp_path):
     rows = [{"layer": 5, "neuron": 1, "sign": 1, "text": HOSTILE}]
     records = read_records(write_records(tmp_path / "r.jsonl", rows))
     assert rank(records, load_family("honesty")) == []
+
+
+def test_contrast_rank_prefers_causal_over_echo(tmp_path):
+    from research.shortlist import contrast_rank
+
+    rows = [
+        {"layer": 5, "neuron": 1, "sign": 1, "text": HOSTILE},
+        {"layer": 5, "neuron": 1, "sign": -1, "text": HOSTILE},
+        {"layer": 8, "neuron": 2, "sign": 1, "text": HOSTILE},
+        {"layer": 8, "neuron": 2, "sign": -1, "text": NEUTRAL},
+        {"layer": 10, "neuron": 3, "sign": 1, "text": NEUTRAL},
+        {"layer": 10, "neuron": 3, "sign": -1, "text": HOSTILE},
+    ]
+    family = load_family("personas")
+    ranked = contrast_rank(read_records(write_records(tmp_path / "c.jsonl", rows)), family, limit=9)
+    by_cell = {(row["layer"], row["neuron"]): row for row in ranked}
+
+    assert (5, 1) not in by_cell, "an echo scores on both signs and must not rank"
+    assert by_cell[(8, 2)]["sign"] == 1
+    assert by_cell[(10, 3)]["sign"] == -1
+    assert abs(by_cell[(8, 2)]["contrast"]) > abs(by_cell[(10, 3)]["contrast"]) - 1e-9

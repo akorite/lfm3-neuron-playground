@@ -24,7 +24,7 @@ from research.catalog import (
 from research.model_info import SAMPLED_LAYERS, layer_type
 from research.prompts import DEFAULT_PROMPT, FAMILY_PROMPTS
 from research.score import FAMILIES, coherence, fires, load_family, score, tokens
-from research.shortlist import rank, read_records
+from research.shortlist import contrast_rank, read_records
 
 
 def load_all(paths: list[Path]) -> list[dict]:
@@ -106,9 +106,7 @@ def build(records: list[dict], limit: int = 40, allow_missing_family: bool = Fal
         usable = [
             record for record in family_records if not is_degenerate(record["text"], family)
         ]
-        for item in rank(usable, family, limit=limit):
-            if not fires(item["score"], family):
-                continue
+        for item in contrast_rank(usable, family, limit=limit):
             entries.append(
                 {
                     "family": name,
@@ -117,6 +115,7 @@ def build(records: list[dict], limit: int = 40, allow_missing_family: bool = Fal
                     "dose": item["sign"],
                     "layer_type": layer_type(item["layer"]),
                     "score": item["score"],
+                    "contrast": item["contrast"],
                     "text": item["text"],
                 }
             )

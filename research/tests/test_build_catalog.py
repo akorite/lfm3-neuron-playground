@@ -11,12 +11,16 @@ NEUTRAL = "The library opens at nine."
 
 
 def records() -> list[dict]:
+    """Both signs per cell: the selector ranks on their contrast."""
     return [
         {"layer": 5, "neuron": 10, "sign": 1, "text": HOSTILE},
+        {"layer": 5, "neuron": 10, "sign": -1, "text": NEUTRAL},
         {"layer": 8, "neuron": 20, "sign": 1, "text": HOSTILE},
+        {"layer": 8, "neuron": 20, "sign": -1, "text": NEUTRAL},
         {"layer": 10, "neuron": 30, "sign": 1, "text": HOSTILE},
-        {"layer": 11, "neuron": 40, "sign": 1, "text": "这是一个中文回答。"},
-        {"layer": 5, "neuron": 11, "sign": -1, "text": NEUTRAL},
+        {"layer": 10, "neuron": 30, "sign": -1, "text": NEUTRAL},
+        {"layer": 11, "neuron": 40, "sign": 1, "text": "This is a hostile kill and hate filled death curse."},
+        {"layer": 11, "neuron": 40, "sign": -1, "text": NEUTRAL},
     ]
 
 
@@ -24,7 +28,7 @@ def test_heatmap_only_tracks_sampled_layers():
     scores = heatmap_scores(records())
     assert set(scores) == set(SAMPLED_LAYERS)
     assert scores[5][10] > 0
-    assert scores[5][10] > scores[5][11]
+    assert scores[8][20] > 0
 
 
 def test_build_emits_catalog_heatmap_and_recipes():
