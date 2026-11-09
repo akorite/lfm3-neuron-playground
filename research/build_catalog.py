@@ -96,7 +96,18 @@ def share_from_records(records: list[dict]) -> dict[str, dict]:
     }
 
 
-def build(records: list[dict], limit: int = 40, allow_missing_family: bool = False) -> tuple[dict, bytes, list[dict]]:
+def build(
+    records: list[dict],
+    limit: int = 40,
+    allow_missing_family: bool = False,
+    deep_records: list[dict] | None = None,
+) -> tuple[dict, bytes, list[dict]]:
+    """Selection comes from the paired broad sweep; published text comes from
+    the deep rollout when one exists for that cell and sign."""
+    deep_text = {
+        (record["layer"], record["neuron"], record["sign"]): record["text"]
+        for record in (deep_records or [])
+    }
     entries = []
     for name in FAMILIES:
         family = load_family(name)
@@ -116,7 +127,9 @@ def build(records: list[dict], limit: int = 40, allow_missing_family: bool = Fal
                     "layer_type": layer_type(item["layer"]),
                     "score": item["score"],
                     "contrast": item["contrast"],
-                    "text": item["text"],
+                    "text": deep_text.get(
+                        (item["layer"], item["neuron"], item["sign"]), item["text"]
+                    ),
                 }
             )
     missing = sorted(set(FAMILIES) - {entry["family"] for entry in entries})
@@ -144,10 +157,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, default=Path("web/public"))
     parser.add_argument("--limit", type=int, default=40)
     parser.add_argument("--allow-missing-family", action="store_true")
+    parser.add_argument("--deep", type=Path, nargs="+", default=[])
     args = parser.parse_args(argv)
 
     catalog, heatmap, recipes = build(
-        load_all(args.records), limit=args.limit, allow_missing_family=args.allow_missing_family
+        load_all(args.records),
+        limit=args.limit,
+        allow_missing_family=args.allow_missing_family,
+        deep_records=load_all(args.deep),
     )
     args.out.mkdir(parents=True, exist_ok=True)
     (args.out / "catalog.json").write_text(json.dumps(catalog, indent=1))
