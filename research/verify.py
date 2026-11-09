@@ -161,6 +161,7 @@ def verify_entry(runner, tokenizer, stats, entry: dict, prompt: str, tokens: int
     return {
         **entry,
         "verified": verdict["accept"],
+        "score": scores[1],
         "stable_above_25": verdict["stable_above_25"],
         "score_at_dose": scores[1],
         "score_at_lower": scores[0],
